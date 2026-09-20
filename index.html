@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RB FlyerViewer - 全国バイクWebチラシ統合検索</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent-red: #dc2626;
+      --badge-new: #ef4444;
+      --badge-owner: #0284c7;
+      --badge-prev: #d97706;
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 60px;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .update-time {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: #f1f5f9;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+
+    /* Filter Area */
+    .filter-card {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .filter-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .input-control {
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      background: #fff;
+    }
+    .input-control:focus {
+      border-color: var(--primary);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.75rem;
+    }
+    .count-text { font-size: 0.9rem; color: var(--text-muted); }
+    .count-text b { color: var(--text-main); font-size: 1.1rem; }
+
+    .view-toggle {
+      display: flex;
+      gap: 4px;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 6px;
+    }
+    .view-btn {
+      border: none;
+      background: transparent;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+    .view-btn.active {
+      background: #fff;
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    /* Bike List - Card View */
+    .bike-grid.card-view {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.25rem;
+    }
+    .card-view .bike-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .card-view .bike-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+    }
+    .card-view .img-box {
+      width: 100%;
+      height: 190px;
+      background: #f1f5f9;
+      position: relative;
+    }
+    .card-view .img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-view .content-box {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .card-view .bike-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      color: var(--text-main);
+    }
+    .card-view .bike-price {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent-red);
+      margin: 0.4rem 0;
+    }
+    .card-view .bike-info {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    .card-view .tags-box {
+      margin-top: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding-top: 0.5rem;
+      border-top: 1px dashed var(--border-color);
+    }
+    .card-view .shop-tag {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+      width: fit-content;
+      transition: color 0.15s;
+    }
+    .card-view .shop-tag:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    /* Bike List - List View */
+    .bike-grid.list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .list-view .bike-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .list-view .img-box {
+      width: 120px;
+      height: 80px;
+      flex-shrink: 0;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #f1f5f9;
+      position: relative;
+    }
+    .list-view .img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .list-view .content-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .list-view .main-info {
+      min-width: 220px;
+    }
+    .list-view .bike-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .list-view .bike-info {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .list-view .shop-link {
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.15s;
+    }
+    .list-view .shop-link:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+    .list-view .tags-box {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .list-view .bike-price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-red);
+      text-align: right;
+      min-width: 100px;
+    }
+
+    /* Badges & Tags */
+    .badge {
+      position: absolute;
+      padding: 2px 7px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 4px;
+      color: #fff;
+    }
+    .badge-new { top: 8px; left: 8px; background: var(--badge-new); }
+    .badge-owner { top: 8px; left: 58px; background: var(--badge-owner); }
+    .badge-prev { top: 8px; right: 8px; background: var(--badge-prev); }
+
+    .tag-item {
+      font-size: 0.75rem;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <i class="fa-solid fa-motorcycle"></i>
+        <span>RB FlyerViewer</span>
+      </a>
+      <div class="update-time" id="update-label">
+        <i class="fa-regular fa-clock"></i> 読込中...
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="filter-card">
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label for="search">フリーワード検索</label>
+          <input type="text" id="search" class="input-control" placeholder="車種名・メーカー名">
+        </div>
+        <div class="filter-group">
+          <label for="shop-filter">店舗絞り込み</label>
+          <select id="shop-filter" class="input-control">
+            <option value="">全店舗</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="price-filter">上限価格</label>
+          <select id="price-filter" class="input-control">
+            <option value="">指定なし</option>
+            <option value="40">40万円以下</option>
+            <option value="60">60万円以下</option>
+            <option value="80">80万円以下</option>
+            <option value="100">100万円以下</option>
+            <option value="150">150万円以下</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="sort-filter">並び替え</label>
+          <select id="sort-filter" class="input-control">
+            <option value="new-first">新入荷優先</option>
+            <option value="price-asc">価格が安い順</option>
+            <option value="price-desc">価格が高い順</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="count-text">該当台数: <b id="total-count">0</b> 台</div>
+        <div class="view-toggle">
+          <button class="view-btn active" id="btn-card" onclick="setView('card')"><i class="fa-solid fa-border-all"></i> カード</button>
+          <button class="view-btn" id="btn-list" onclick="setView('list')"><i class="fa-solid fa-list"></i> リスト</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="bike-container" class="bike-grid card-view"></div>
+  </div>
+
+  <script>
+    let allBikes = [];
+    let currentView = 'card';
+
+    async function loadData() {
+      try {
+        const res = await fetch('data.json');
+        if (!res.ok) throw new Error('data.json が見つかりません');
+        const data = await res.json();
+
+        document.getElementById('update-label').innerHTML = `<i class="fa-regular fa-clock"></i> 更新日: ${data.updated_at || '不明'}`;
+        allBikes = data.bikes || [];
+        populateShopList(allBikes);
+        applyFilter();
+      } catch (e) {
+        console.error(e);
+        document.getElementById('bike-container').innerHTML = '<p style="padding:2rem;text-align:center;color:#64748b;">データ読み込みに失敗しました。data.json が配置されているかご確認ください。</p>';
+      }
+    }
+
+    function populateShopList(bikes) {
+      const shopSelect = document.getElementById('shop-filter');
+      const shops = Array.from(new Set(bikes.map(b => b.shop_name))).filter(Boolean);
+      shops.sort().forEach(shop => {
+        const opt = document.createElement('option');
+        opt.value = shop;
+        opt.textContent = shop;
+        shopSelect.appendChild(opt);
+      });
+    }
+
+    // 店舗名クリック時に該当店舗へ絞り込む
+    function filterByShop(shopName) {
+      if (!shopName) return;
+      const shopSelect = document.getElementById('shop-filter');
+      shopSelect.value = shopName;
+      applyFilter();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function applyFilter() {
+      const searchVal = document.getElementById('search').value.toLowerCase().trim();
+      const shopVal = document.getElementById('shop-filter').value;
+      const maxPrice = parseFloat(document.getElementById('price-filter').value);
+      const sortVal = document.getElementById('sort-filter').value;
+
+      let filtered = allBikes.filter(bike => {
+        const titleMatch = (bike.title || '').toLowerCase().includes(searchVal);
+        const shopMatch = !shopVal || bike.shop_name === shopVal;
+        const priceMatch = isNaN(maxPrice) || (bike.price_num > 0 && bike.price_num <= maxPrice);
+        return titleMatch && shopMatch && priceMatch;
+      });
+
+      if (sortVal === 'new-first') {
+        filtered.sort((a, b) => (b.is_new ? 1 : 0) - (a.is_new ? 1 : 0));
+      } else if (sortVal === 'price-asc') {
+        filtered.sort((a, b) => a.price_num - b.price_num);
+      } else if (sortVal === 'price-desc') {
+        filtered.sort((a, b) => b.price_num - a.price_num);
+      }
+
+      render(filtered);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function render(bikes) {
+      const container = document.getElementById('bike-container');
+      document.getElementById('total-count').textContent = bikes.length;
+      container.innerHTML = '';
+
+      if (bikes.length === 0) {
+        container.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:3rem;color:#64748b;">条件に合うバイクが見つかりませんでした。</p>';
+        return;
+      }
+
+      bikes.forEach(bike => {
+        const card = document.createElement('div');
+        card.className = 'bike-card';
+
+        const newBadge = bike.is_new ? '<span class="badge badge-new">新入荷</span>' : '';
+        const ownerBadge = bike.is_one_owner ? '<span class="badge badge-owner">ワンオーナー</span>' : '';
+        const prevBadge = bike.is_previous_month ? '<span class="badge badge-prev">先月チラシ</span>' : '';
+
+        const tagsHtml = (bike.special_notes || []).map(t => `<span class="tag-item">${escapeHtml(t)}</span>`).join('');
+        const safeShopName = escapeHtml(bike.shop_name);
+        const safeTitle = escapeHtml(bike.title);
+        const safeTitleSub = escapeHtml(bike.title_sub || '');
+        const safePriceDisplay = escapeHtml(bike.price_display);
+        const safeInfo = escapeHtml(bike.info);
+
+        if (currentView === 'card') {
+          card.innerHTML = `
+            <div class="img-box">
+              ${newBadge}${ownerBadge}${prevBadge}
+              <img src="${bike.image}" alt="${safeTitle}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%2394a3b8\\' stroke-width=\\'2\\'><rect width=\\'18\\' height=\\'18\\' x=\\'3\\' y=\\'3\\' rx=\\'2\\'/></svg>'">
+            </div>
+            <div class="content-box">
+              <div class="bike-title">${safeTitle} ${safeTitleSub}</div>
+              <div class="bike-price">${safePriceDisplay}</div>
+              <div class="bike-info">${safeInfo}</div>
+              <div class="tags-box">${tagsHtml}</div>
+              <div class="shop-tag" onclick="filterByShop('${safeShopName}')">
+                <i class="fa-solid fa-location-dot"></i> <span>${safeShopName}</span>
+              </div>
+            </div>
+          `;
+        } else {
+          card.innerHTML = `
+            <div class="img-box">
+              ${newBadge}${ownerBadge}${prevBadge}
+              <img src="${bike.image}" alt="${safeTitle}" loading="lazy">
+            </div>
+            <div class="content-box">
+              <div class="main-info">
+                <div class="bike-title">${safeTitle} ${safeTitleSub}</div>
+                <div class="bike-info">
+                  ${safeInfo} ｜ 
+                  <span class="shop-link" onclick="filterByShop('${safeShopName}')">
+                    <i class="fa-solid fa-location-dot"></i> ${safeShopName}
+                  </span>
+                </div>
+              </div>
+              <div class="tags-box">${tagsHtml}</div>
+              <div class="bike-price">${safePriceDisplay}</div>
+            </div>
+          `;
+        }
+        container.appendChild(card);
+      });
+    }
+
+    function setView(view) {
+      currentView = view;
+      const c = document.getElementById('bike-container');
+      document.getElementById('btn-card').classList.toggle('active', view === 'card');
+      document.getElementById('btn-list').classList.toggle('active', view === 'list');
+      c.className = `bike-grid ${view}-view`;
+      applyFilter();
+    }
+
+    document.getElementById('search').addEventListener('input', applyFilter);
+    document.getElementById('shop-filter').addEventListener('change', applyFilter);
+    document.getElementById('price-filter').addEventListener('change', applyFilter);
+    document.getElementById('sort-filter').addEventListener('change', applyFilter);
+
+    loadData();
+  </script>
+</body>
+</html>
