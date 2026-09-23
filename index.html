@@ -29,7 +29,7 @@
       font-family: 'Noto Sans JP', 'Inter', sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
-      padding-bottom: 60px;
+      padding-bottom: 80px;
     }
 
     header {
@@ -105,9 +105,7 @@
       outline: none;
       background: #fff;
     }
-    .input-control:focus {
-      border-color: var(--primary);
-    }
+    .input-control:focus { border-color: var(--primary); }
 
     .toolbar {
       display: flex;
@@ -115,6 +113,8 @@
       align-items: center;
       border-top: 1px solid var(--border-color);
       padding-top: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
     .count-text { font-size: 0.9rem; color: var(--text-muted); }
     .count-text b { color: var(--text-main); font-size: 1.1rem; }
@@ -155,6 +155,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      position: relative;
       transition: transform 0.15s, box-shadow 0.15s;
     }
     .card-view .bike-card:hover {
@@ -210,6 +211,13 @@
       display: flex;
       align-items: center;
       gap: 0.3rem;
+      cursor: pointer;
+      width: fit-content;
+      transition: color 0.15s;
+    }
+    .card-view .shop-tag:hover {
+      color: var(--primary);
+      text-decoration: underline;
     }
 
     /* Bike List - List View */
@@ -226,6 +234,7 @@
       display: flex;
       align-items: center;
       gap: 1.25rem;
+      position: relative;
     }
     .list-view .img-box {
       width: 120px;
@@ -249,22 +258,19 @@
       flex-wrap: wrap;
       gap: 0.75rem;
     }
-    .list-view .main-info {
-      min-width: 220px;
-    }
-    .list-view .bike-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
-    .list-view .bike-info {
-      font-size: 0.8rem;
+    .list-view .main-info { min-width: 220px; }
+    .list-view .bike-title { font-size: 0.95rem; font-weight: 700; }
+    .list-view .bike-info { font-size: 0.8rem; color: var(--text-muted); }
+    .list-view .shop-link {
+      cursor: pointer;
       color: var(--text-muted);
+      transition: color 0.15s;
     }
-    .list-view .tags-box {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
+    .list-view .shop-link:hover {
+      color: var(--primary);
+      text-decoration: underline;
     }
+    .list-view .tags-box { display: flex; gap: 4px; flex-wrap: wrap; }
     .list-view .bike-price {
       font-size: 1.2rem;
       font-weight: 700;
@@ -273,7 +279,7 @@
       min-width: 100px;
     }
 
-    /* Badges & Tags */
+    /* Badges */
     .badge {
       position: absolute;
       padding: 2px 7px;
@@ -281,6 +287,7 @@
       font-weight: 600;
       border-radius: 4px;
       color: #fff;
+      z-index: 2;
     }
     .badge-new { top: 8px; left: 8px; background: var(--badge-new); }
     .badge-owner { top: 8px; left: 58px; background: var(--badge-owner); }
@@ -293,6 +300,197 @@
       padding: 2px 6px;
       border-radius: 4px;
       font-weight: 500;
+    }
+
+    /* Favorite Button on Card */
+    .fav-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.15s;
+    }
+    .fav-btn:hover { transform: scale(1.1); }
+    .fav-btn i { color: #94a3b8; font-size: 0.95rem; }
+    .fav-btn.active i { color: var(--accent-red); }
+    .list-view .fav-btn {
+      position: static;
+      flex-shrink: 0;
+    }
+
+    /* Floating Favorite Tray */
+    .floating-fav-badge {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #fff;
+      padding: 0.8rem 1.4rem;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      z-index: 100;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .floating-fav-badge:hover {
+      transform: translateY(-2px);
+      background: #1e293b;
+    }
+    .fav-count-pill {
+      background: var(--accent-red);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 960px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Compare Table View */
+    .compare-table-wrapper {
+      overflow-x: auto;
+    }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 600px;
+    }
+    .compare-table th, .compare-table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+    .compare-table th {
+      background: #f1f5f9;
+      width: 120px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .compare-table .bike-header-cell {
+      min-width: 200px;
+      position: relative;
+    }
+    .compare-table img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Favorite List Mode inside Modal */
+    .modal-fav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .modal-fav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      gap: 1rem;
+    }
+    .modal-fav-item img {
+      width: 80px;
+      height: 55px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    .del-btn {
+      background: #fee2e2;
+      color: var(--accent-red);
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .del-btn:hover { background: #fca5a5; }
+
+    /* Infinite Scroll Loader */
+    .scroll-loader {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
     }
   </style>
 </head>
@@ -354,11 +552,62 @@
     </div>
 
     <div id="bike-container" class="bike-grid card-view"></div>
+
+    <div id="scroll-sentinel" class="scroll-loader">
+      <i class="fa-solid fa-spinner fa-spin"></i> 読み込み中...
+    </div>
+  </div>
+
+  <!-- Floating Favorite Button -->
+  <div class="floating-fav-badge" onclick="openFavModal()">
+    <i class="fa-solid fa-heart" style="color: var(--accent-red);"></i>
+    <span>お気に入り</span>
+    <span class="fav-count-pill" id="fav-floating-count">0</span>
+  </div>
+
+  <!-- Favorite & Compare Modal -->
+  <div class="modal-overlay" id="fav-modal" onclick="closeFavModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-heart" style="color: var(--accent-red);"></i>
+          <span>お気に入り・車両比較</span>
+        </div>
+        <button class="modal-close" onclick="closeFavModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-actions">
+        <div class="view-toggle">
+          <button class="view-btn active" id="btn-fav-compare" onclick="setFavView('compare')"><i class="fa-solid fa-table-columns"></i> 比較表</button>
+          <button class="view-btn" id="btn-fav-list" onclick="setFavView('list')"><i class="fa-solid fa-list"></i> 一覧リスト</button>
+        </div>
+        <button class="del-btn" style="background:#f1f5f9;color:#64748b;" onclick="clearAllFavorites()">
+          <i class="fa-solid fa-trash-can"></i> すべて削除
+        </button>
+      </div>
+
+      <div class="modal-body" id="fav-modal-body">
+        <!-- Content will be rendered here -->
+      </div>
+    </div>
   </div>
 
   <script>
+    const PAGE_SIZE = 48;
+    const STORAGE_KEY = 'rb_flyer_favorites';
+
     let allBikes = [];
+    let currentFiltered = [];
+    let displayedCount = 0;
     let currentView = 'card';
+    let favView = 'compare'; // 'compare' or 'list'
+    let favorites = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    let observer = null;
+
+    // 車両の固有キー生成 (店舗名 + 車種名 + 価格 + スペック)
+    function getBikeKey(b) {
+      return `${b.shop_name}_${b.title}_${b.price_num}_${b.info}`;
+    }
 
     async function loadData() {
       try {
@@ -368,11 +617,174 @@
 
         document.getElementById('update-label').innerHTML = `<i class="fa-regular fa-clock"></i> 更新日: ${data.updated_at || '不明'}`;
         allBikes = data.bikes || [];
+
+        // 月替わり・在庫消失時の自動クリーンアップ
+        cleanupExpiredFavorites();
+
         populateShopList(allBikes);
+        updateFavCountUI();
+        setupObserver();
         applyFilter();
       } catch (e) {
         console.error(e);
-        document.getElementById('bike-container').innerHTML = '<p style="padding:2rem;text-align:center;color:#64748b;">データ読み込みに失敗しました。data.json が配置されているかご確認ください。</p>';
+        document.getElementById('bike-container').innerHTML = '<p style="padding:2rem;text-align:center;color:#64748b;">データ読み込みに失敗しました。</p>';
+        document.getElementById('scroll-sentinel').style.display = 'none';
+      }
+    }
+
+    // 最新データに存在しないお気に入りを自動除外
+    function cleanupExpiredFavorites() {
+      const activeKeys = new Set(allBikes.map(getBikeKey));
+      const initialCount = favorites.length;
+      favorites = favorites.filter(b => activeKeys.has(getBikeKey(b)));
+
+      if (favorites.length !== initialCount) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+        console.log(`掲載が終了した ${initialCount - favorites.length} 台の車両をお気に入りから除外しました。`);
+      }
+    }
+
+    function toggleFavorite(bike, event) {
+      if (event) event.stopPropagation();
+      const key = getBikeKey(bike);
+      const index = favorites.findIndex(b => getBikeKey(b) === key);
+
+      if (index > -1) {
+        favorites.splice(index, 1);
+      } else {
+        favorites.push(bike);
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+      updateFavCountUI();
+      syncFavButtons();
+
+      if (document.getElementById('fav-modal').classList.contains('active')) {
+        renderFavModalContent();
+      }
+    }
+
+    function clearAllFavorites() {
+      if (!confirm('お気に入りをすべて削除しますか？')) return;
+      favorites = [];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+      updateFavCountUI();
+      syncFavButtons();
+      renderFavModalContent();
+    }
+
+    function updateFavCountUI() {
+      document.getElementById('fav-floating-count').textContent = favorites.length;
+    }
+
+    function syncFavButtons() {
+      const favKeySet = new Set(favorites.map(getBikeKey));
+      document.querySelectorAll('.fav-btn').forEach(btn => {
+        const key = btn.getAttribute('data-bike-key');
+        if (favKeySet.has(key)) {
+          btn.classList.add('active');
+          btn.innerHTML = '<i class="fa-solid fa-heart" style="color:var(--accent-red)"></i>';
+        } else {
+          btn.classList.remove('active');
+          btn.innerHTML = '<i class="fa-regular fa-heart"></i>';
+        }
+      });
+    }
+
+    function openFavModal() {
+      document.getElementById('fav-modal').classList.add('active');
+      renderFavModalContent();
+    }
+
+    function closeFavModal(event) {
+      if (!event || event.target.id === 'fav-modal' || event.target.closest('.modal-close')) {
+        document.getElementById('fav-modal').classList.remove('active');
+      }
+    }
+
+    function setFavView(view) {
+      favView = view;
+      document.getElementById('btn-fav-compare').classList.toggle('active', view === 'compare');
+      document.getElementById('btn-fav-list').classList.toggle('active', view === 'list');
+      renderFavModalContent();
+    }
+
+    function renderFavModalContent() {
+      const body = document.getElementById('fav-modal-body');
+      if (favorites.length === 0) {
+        body.innerHTML = `
+          <div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);">
+            <i class="fa-regular fa-heart" style="font-size:2.5rem;margin-bottom:1rem;display:block;"></i>
+            お気に入り登録された車両はありません。<br>気になる車両の「ハート」マークを押して保存してください。
+          </div>
+        `;
+        return;
+      }
+
+      if (favView === 'compare') {
+        let thead = '<th>車両情報</th>';
+        let rowPrice = '<th>価格</th>';
+        let rowShop = '<th>店舗</th>';
+        let rowInfo = '<th>諸元 / 状態</th>';
+        let rowTags = '<th>タグ</th>';
+        let rowAction = '<th>操作</th>';
+
+        favorites.forEach(b => {
+          const safeKey = escapeHtml(getBikeKey(b));
+          thead += `
+            <td class="bike-header-cell">
+              <img src="${b.image}" alt="${escapeHtml(b.title)}">
+              <div style="font-weight:700;font-size:0.95rem;">${escapeHtml(b.title)} ${escapeHtml(b.title_sub || '')}</div>
+            </td>
+          `;
+          rowPrice += `<td style="font-weight:700;color:var(--accent-red);font-size:1.1rem;">${escapeHtml(b.price_display)}</td>`;
+          rowShop += `<td><i class="fa-solid fa-location-dot"></i> ${escapeHtml(b.shop_name)}</td>`;
+          rowInfo += `<td style="font-size:0.85rem;color:var(--text-muted);">${escapeHtml(b.info)}</td>`;
+          rowTags += `<td>${(b.special_notes || []).map(t => `<span class="tag-item">${escapeHtml(t)}</span>`).join(' ')}</td>`;
+          rowAction += `<td><button class="del-btn" onclick='removeFavByKey("${safeKey}")'><i class="fa-solid fa-trash-can"></i> 削除</button></td>`;
+        });
+
+        body.innerHTML = `
+          <div class="compare-table-wrapper">
+            <table class="compare-table">
+              <tr>${thead}</tr>
+              <tr>${rowPrice}</tr>
+              <tr>${rowShop}</tr>
+              <tr>${rowInfo}</tr>
+              <tr>${rowTags}</tr>
+              <tr>${rowAction}</tr>
+            </table>
+          </div>
+        `;
+      } else {
+        let html = '<div class="modal-fav-list">';
+        favorites.forEach(b => {
+          const safeKey = escapeHtml(getBikeKey(b));
+          html += `
+            <div class="modal-fav-item">
+              <img src="${b.image}" alt="${escapeHtml(b.title)}">
+              <div style="flex:1;">
+                <div style="font-weight:700;font-size:0.95rem;">${escapeHtml(b.title)} ${escapeHtml(b.title_sub || '')}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);">${escapeHtml(b.shop_name)} ｜ ${escapeHtml(b.info)}</div>
+              </div>
+              <div style="font-weight:700;color:var(--accent-red);font-size:1.1rem;">${escapeHtml(b.price_display)}</div>
+              <button class="del-btn" onclick='removeFavByKey("${safeKey}")'><i class="fa-solid fa-trash-can"></i> 削除</button>
+            </div>
+          `;
+        });
+        html += '</div>';
+        body.innerHTML = html;
+      }
+    }
+
+    function removeFavByKey(key) {
+      const idx = favorites.findIndex(b => getBikeKey(b) === key);
+      if (idx > -1) {
+        favorites.splice(idx, 1);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+        updateFavCountUI();
+        syncFavButtons();
+        renderFavModalContent();
       }
     }
 
@@ -388,92 +800,176 @@
     }
 
     function filterByShop(shopName) {
+      if (!shopName) return;
       const shopSelect = document.getElementById('shop-filter');
-      shopSelect.value = shopName; // ドロップダウンを選択状態にする
-      applyFilter();              // 絞り込みを再実行
-      window.scrollTo({ top: 0, behavior: 'smooth' }); // 上部へスムーズにスクロール
+      shopSelect.value = shopName;
+      applyFilter();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    
+
     function applyFilter() {
       const searchVal = document.getElementById('search').value.toLowerCase().trim();
       const shopVal = document.getElementById('shop-filter').value;
       const maxPrice = parseFloat(document.getElementById('price-filter').value);
       const sortVal = document.getElementById('sort-filter').value;
 
-      let filtered = allBikes.filter(bike => {
+      currentFiltered = allBikes.filter(bike => {
         const titleMatch = (bike.title || '').toLowerCase().includes(searchVal);
         const shopMatch = !shopVal || bike.shop_name === shopVal;
         const priceMatch = isNaN(maxPrice) || (bike.price_num > 0 && bike.price_num <= maxPrice);
         return titleMatch && shopMatch && priceMatch;
       });
 
-      // 並び替え処理
       if (sortVal === 'new-first') {
-        filtered.sort((a, b) => (b.is_new ? 1 : 0) - (a.is_new ? 1 : 0));
+        currentFiltered.sort((a, b) => (b.is_new ? 1 : 0) - (a.is_new ? 1 : 0));
       } else if (sortVal === 'price-asc') {
-        filtered.sort((a, b) => a.price_num - b.price_num);
+        currentFiltered.sort((a, b) => a.price_num - b.price_num);
       } else if (sortVal === 'price-desc') {
-        filtered.sort((a, b) => b.price_num - a.price_num);
+        currentFiltered.sort((a, b) => b.price_num - a.price_num);
       }
 
-      render(filtered);
-    }
+      document.getElementById('total-count').textContent = currentFiltered.length;
 
-    function render(bikes) {
       const container = document.getElementById('bike-container');
-      document.getElementById('total-count').textContent = bikes.length;
       container.innerHTML = '';
+      displayedCount = 0;
 
-      if (bikes.length === 0) {
+      if (currentFiltered.length === 0) {
         container.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:3rem;color:#64748b;">条件に合うバイクが見つかりませんでした。</p>';
+        updateSentinel(false, '該当なし');
         return;
       }
 
-      bikes.forEach(bike => {
-        const card = document.createElement('div');
-        card.className = 'bike-card';
+      renderMore();
+    }
 
-        const newBadge = bike.is_new ? '<span class="badge badge-new">新入荷</span>' : '';
-        const ownerBadge = bike.is_one_owner ? '<span class="badge badge-owner">ワンオーナー</span>' : '';
-        const prevBadge = bike.is_previous_month ? '<span class="badge badge-prev">先月チラシ</span>' : '';
+    function renderMore() {
+      if (displayedCount >= currentFiltered.length) {
+        updateSentinel(false, `すべての車両（${currentFiltered.length} 台）を表示しました`);
+        return;
+      }
 
-        const tagsHtml = (bike.special_notes || []).map(t => `<span class="tag-item">${t}</span>`).join('');
+      const nextBatch = currentFiltered.slice(displayedCount, displayedCount + PAGE_SIZE);
+      const container = document.getElementById('bike-container');
+      const fragment = document.createDocumentFragment();
 
-        if (currentView === 'card') {
-          card.innerHTML = `
-            <div class="img-box">
-              ${newBadge}${ownerBadge}${prevBadge}
-              <img src="${bike.image}" alt="${bike.title}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%2394a3b8\\' stroke-width=\\'2\\'><rect width=\\'18\\' height=\\'18\\' x=\\'3\\' y=\\'3\\' rx=\\'2\\'/></svg>'">
-            </div>
-            <div class="content-box">
-              <div class="bike-title">${bike.title} ${bike.title_sub || ''}</div>
-              <div class="bike-price">${bike.price_display}</div>
-              <div class="bike-info">${bike.info}</div>
-              <div class="tags-box">${tagsHtml}</div>
-              <div class="shop-tag"><i class="fa-solid fa-location-dot"></i> ${bike.shop_name}</div>
-            </div>
-          `;
-        } else {
-          card.innerHTML = `
-            <div class="img-box">
-              ${newBadge}${ownerBadge}${prevBadge}
-              <img src="${bike.image}" alt="${bike.title}" loading="lazy">
-            </div>
-            <div class="content-box">
-              <div class="main-info">
-                <div class="bike-title">${bike.title} ${bike.title_sub || ''}</div>
-                <div class="bike-info">${bike.info} ｜ <i class="fa-solid fa-location-dot"></i> ${bike.shop_name}</div>
-              </div>
-              <div class="tags-box">${tagsHtml}</div>
-              <div class="bike-price">${bike.price_display}</div>
-            </div>
-          `;
-        }
-        container.appendChild(card);
+      nextBatch.forEach(bike => {
+        const card = createBikeElement(bike);
+        fragment.appendChild(card);
       });
+
+      container.appendChild(fragment);
+      displayedCount += nextBatch.length;
+
+      if (displayedCount >= currentFiltered.length) {
+        updateSentinel(false, `すべての車両（${currentFiltered.length} 台）を表示しました`);
+      } else {
+        updateSentinel(true);
+      }
+
+      syncFavButtons();
+    }
+
+    function updateSentinel(isLoading, message = '') {
+      const sentinel = document.getElementById('scroll-sentinel');
+      if (isLoading) {
+        sentinel.style.display = 'flex';
+        sentinel.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 読み込み中...';
+      } else {
+        sentinel.style.display = message ? 'flex' : 'none';
+        sentinel.innerHTML = message;
+      }
+    }
+
+    function setupObserver() {
+      const sentinel = document.getElementById('scroll-sentinel');
+      observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && displayedCount < currentFiltered.length) {
+          renderMore();
+        }
+      }, { rootMargin: '300px' });
+      observer.observe(sentinel);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function createBikeElement(bike) {
+      const card = document.createElement('div');
+      card.className = 'bike-card';
+
+      const key = getBikeKey(bike);
+      const isFav = favorites.some(b => getBikeKey(b) === key);
+
+      const newBadge = bike.is_new ? '<span class="badge badge-new">新入荷</span>' : '';
+      const ownerBadge = bike.is_one_owner ? '<span class="badge badge-owner">ワンオーナー</span>' : '';
+      const prevBadge = bike.is_previous_month ? '<span class="badge badge-prev">先月チラシ</span>' : '';
+
+      const tagsHtml = (bike.special_notes || []).map(t => `<span class="tag-item">${escapeHtml(t)}</span>`).join('');
+      const safeShopName = escapeHtml(bike.shop_name);
+      const safeTitle = escapeHtml(bike.title);
+      const safeTitleSub = escapeHtml(bike.title_sub || '');
+      const safePriceDisplay = escapeHtml(bike.price_display);
+      const safeInfo = escapeHtml(bike.info);
+      const safeKey = escapeHtml(key);
+
+      const favIcon = isFav ? '<i class="fa-solid fa-heart" style="color:var(--accent-red)"></i>' : '<i class="fa-regular fa-heart"></i>';
+
+      if (currentView === 'card') {
+        card.innerHTML = `
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-bike-key="${safeKey}" onclick='toggleFavorite(${JSON.stringify(bike).replace(/'/g, "&apos;")}, event)'>
+            ${favIcon}
+          </button>
+          <div class="img-box">
+            ${newBadge}${ownerBadge}${prevBadge}
+            <img src="${bike.image}" alt="${safeTitle}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%2394a3b8\\' stroke-width=\\'2\\'><rect width=\\'18\\' height=\\'18\\' x=\\'3\\' y=\\'3\\' rx=\\'2\\'/></svg>'">
+          </div>
+          <div class="content-box">
+            <div class="bike-title">${safeTitle} ${safeTitleSub}</div>
+            <div class="bike-price">${safePriceDisplay}</div>
+            <div class="bike-info">${safeInfo}</div>
+            <div class="tags-box">${tagsHtml}</div>
+            <div class="shop-tag" onclick="filterByShop('${safeShopName}')">
+              <i class="fa-solid fa-location-dot"></i> <span>${safeShopName}</span>
+            </div>
+          </div>
+        `;
+      } else {
+        card.innerHTML = `
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-bike-key="${safeKey}" onclick='toggleFavorite(${JSON.stringify(bike).replace(/'/g, "&apos;")}, event)'>
+            ${favIcon}
+          </button>
+          <div class="img-box">
+            ${newBadge}${ownerBadge}${prevBadge}
+            <img src="${bike.image}" alt="${safeTitle}" loading="lazy">
+          </div>
+          <div class="content-box">
+            <div class="main-info">
+              <div class="bike-title">${safeTitle} ${safeTitleSub}</div>
+              <div class="bike-info">
+                ${safeInfo} ｜ 
+                <span class="shop-link" onclick="filterByShop('${safeShopName}')">
+                  <i class="fa-solid fa-location-dot"></i> ${safeShopName}
+                </span>
+              </div>
+            </div>
+            <div class="tags-box">${tagsHtml}</div>
+            <div class="bike-price">${safePriceDisplay}</div>
+          </div>
+        `;
+      }
+      return card;
     }
 
     function setView(view) {
+      if (currentView === view) return;
       currentView = view;
       const c = document.getElementById('bike-container');
       document.getElementById('btn-card').classList.toggle('active', view === 'card');
