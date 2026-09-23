@@ -81,7 +81,7 @@
       margin-bottom: 1.25rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .quick-search-box {
+    .desktop-search-box {
       margin-bottom: 0.75rem;
     }
     .input-control {
@@ -418,7 +418,7 @@
       flex-direction: column;
       gap: 1rem;
       animation: slideUp 0.25s ease-out;
-      max-height: 80vh;
+      max-height: 85vh;
       overflow-y: auto;
     }
     @keyframes slideUp {
@@ -561,12 +561,24 @@
     /* Responsive Mobile Rules (768px以下) */
     @media (max-width: 768px) {
       body { padding-bottom: 100px; }
-      .container { margin: 0.75rem auto; padding: 0 0.75rem; }
-      .desktop-filters { display: none; } /* スマホ時はデスクトップ用フィルターを隠す */
-      .desktop-floating-fav { display: none; } /* デスクトップ用右下ボタンを隠す */
-      .mobile-bottom-bar { display: block; } /* スマホ専用固定バーを表示 */
+      .container { margin: 0.5rem auto; padding: 0 0.75rem; }
+      
+      /* スマホ時は上部の検索窓とデスクトップフィルターを非表示 */
+      .desktop-search-box { display: none; }
+      .desktop-filters { display: none; }
+      .filter-card {
+        padding: 0.6rem 0.9rem;
+        margin-bottom: 0.85rem;
+      }
+      .toolbar {
+        border-top: none;
+        padding-top: 0;
+      }
 
-      /* カード表示を「1列（フル幅）」に最適化 */
+      .desktop-floating-fav { display: none; }
+      .mobile-bottom-bar { display: block; }
+
+      /* カード表示を1列フル幅 */
       .bike-grid.card-view {
         grid-template-columns: 1fr;
         gap: 1rem;
@@ -618,12 +630,12 @@
 
   <div class="container">
     <div class="filter-card">
-      <!-- フリーワード検索（PC/スマホ共通） -->
-      <div class="quick-search-box">
-        <input type="text" id="search" class="input-control" placeholder="🔍 車種名・メーカー名で即時検索...">
+      <!-- デスクトップ用検索バー（スマホ時は非表示） -->
+      <div class="desktop-search-box">
+        <input type="text" id="desktop-search" class="input-control" placeholder="🔍 車種名・メーカー名で即時検索..." oninput="syncSearchValue(this.value)">
       </div>
 
-      <!-- デスクトップ用フィルター一覧（スマホでは非表示） -->
+      <!-- デスクトップ用フィルター（スマホ時は非表示） -->
       <div class="desktop-filters">
         <div class="filter-group">
           <label for="shop-filter">店舗絞り込み</label>
@@ -652,6 +664,7 @@
         </div>
       </div>
 
+      <!-- 該当台数 & 表示切替ツールバー（スマホ・PC共通） -->
       <div class="toolbar">
         <div class="count-text">該当台数: <b id="total-count">0</b> 台</div>
         <div class="view-toggle">
@@ -679,8 +692,8 @@
   <div class="mobile-bottom-bar">
     <div class="bottom-bar-inner">
       <button class="bottom-bar-btn btn-bottom-filter" onclick="openFilterSheet()">
-        <i class="fa-solid fa-sliders"></i>
-        <span>絞り込み・並び替え</span>
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>検索・絞り込み</span>
       </button>
       <button class="bottom-bar-btn btn-bottom-fav" onclick="openFavModal()">
         <i class="fa-solid fa-heart" style="color: var(--accent-red);"></i>
@@ -690,13 +703,20 @@
     </div>
   </div>
 
-  <!-- スマホ用フィルターBottomSheetモーダル -->
+  <!-- スマホ用フィルター＆検索 BottomSheetモーダル -->
   <div class="filter-modal-overlay" id="filter-sheet-modal" onclick="closeFilterSheet(event)">
     <div class="filter-sheet" onclick="event.stopPropagation()">
       <div class="sheet-header">
-        <h3><i class="fa-solid fa-sliders"></i> 絞り込み・並び替え</h3>
+        <h3><i class="fa-solid fa-magnifying-glass"></i> 検索・絞り込み条件</h3>
         <button class="sheet-close" onclick="closeFilterSheet()"><i class="fa-solid fa-xmark"></i></button>
       </div>
+
+      <!-- ボトムシート内に統合された検索バー -->
+      <div class="filter-group">
+        <label for="mobile-search">フリーワード検索</label>
+        <input type="text" id="mobile-search" class="input-control" placeholder="車種名・メーカー名を入力..." oninput="syncSearchValue(this.value)">
+      </div>
+
       <div class="filter-group">
         <label for="m-shop-filter">店舗</label>
         <select id="m-shop-filter" class="input-control" onchange="syncFilterValue('shop', this.value)">
@@ -761,6 +781,7 @@
     let currentView = 'card';
     let favView = 'compare';
     let favorites = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    let currentSearchTerm = '';
     let observer = null;
 
     function getBikeKey(b) {
@@ -872,6 +893,16 @@
       closeFilterSheet();
       applyFilter();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // PC検索窓とスマホ検索窓の同期
+    function syncSearchValue(val) {
+      currentSearchTerm = val.toLowerCase().trim();
+      const pcSearch = document.getElementById('desktop-search');
+      const mobileSearch = document.getElementById('mobile-search');
+      if (pcSearch.value !== val) pcSearch.value = val;
+      if (mobileSearch.value !== val) mobileSearch.value = val;
+      applyFilter();
     }
 
     // PCとスマホのセレクトボックスの値を同期
@@ -1000,13 +1031,12 @@
     }
 
     function applyFilter() {
-      const searchVal = document.getElementById('search').value.toLowerCase().trim();
       const shopVal = document.getElementById('shop-filter').value;
       const maxPrice = parseFloat(document.getElementById('price-filter').value);
       const sortVal = document.getElementById('sort-filter').value;
 
       currentFiltered = allBikes.filter(bike => {
-        const titleMatch = (bike.title || '').toLowerCase().includes(searchVal);
+        const titleMatch = (bike.title || '').toLowerCase().includes(currentSearchTerm);
         const shopMatch = !shopVal || bike.shop_name === shopVal;
         const priceMatch = isNaN(maxPrice) || (bike.price_num > 0 && bike.price_num <= maxPrice);
         return titleMatch && shopMatch && priceMatch;
@@ -1169,8 +1199,6 @@
       c.className = `bike-grid ${view}-view`;
       applyFilter();
     }
-
-    document.getElementById('search').addEventListener('input', applyFilter);
 
     loadData();
   </script>
