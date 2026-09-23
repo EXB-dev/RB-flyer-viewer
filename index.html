@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>RB FlyerViewer - 全国バイクWebチラシ統合検索</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,24 +21,24 @@
       --badge-new: #ef4444;
       --badge-owner: #0284c7;
       --badge-prev: #d97706;
-      --radius: 10px;
+      --radius: 12px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: 'Noto Sans JP', 'Inter', sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
-      padding-bottom: 80px;
+      padding-bottom: 90px;
     }
 
     header {
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
-      padding: 1rem 1.5rem;
+      padding: 0.85rem 1.25rem;
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 40;
     }
     .header-inner {
       max-width: 1200px;
@@ -46,11 +46,10 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
       gap: 0.5rem;
     }
     .logo {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--primary);
       text-decoration: none;
@@ -59,16 +58,17 @@
       gap: 0.5rem;
     }
     .update-time {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       background: #f1f5f9;
-      padding: 0.3rem 0.8rem;
+      padding: 0.25rem 0.65rem;
       border-radius: 20px;
+      white-space: nowrap;
     }
 
     .container {
       max-width: 1200px;
-      margin: 1.5rem auto;
+      margin: 1rem auto;
       padding: 0 1rem;
     }
 
@@ -77,15 +77,29 @@
       background: #fff;
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
-      padding: 1.25rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .filter-grid {
+    .quick-search-box {
+      margin-bottom: 0.75rem;
+    }
+    .input-control {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      background: #fff;
+    }
+    .input-control:focus { border-color: var(--primary); }
+
+    .desktop-filters {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.85rem;
     }
     .filter-group {
       display: flex;
@@ -97,15 +111,6 @@
       font-weight: 600;
       color: var(--text-muted);
     }
-    .input-control {
-      padding: 0.6rem 0.8rem;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 0.9rem;
-      outline: none;
-      background: #fff;
-    }
-    .input-control:focus { border-color: var(--primary); }
 
     .toolbar {
       display: flex;
@@ -113,11 +118,10 @@
       align-items: center;
       border-top: 1px solid var(--border-color);
       padding-top: 0.75rem;
-      flex-wrap: wrap;
       gap: 0.5rem;
     }
     .count-text { font-size: 0.9rem; color: var(--text-muted); }
-    .count-text b { color: var(--text-main); font-size: 1.1rem; }
+    .count-text b { color: var(--text-main); font-size: 1.05rem; }
 
     .view-toggle {
       display: flex;
@@ -129,7 +133,7 @@
     .view-btn {
       border: none;
       background: transparent;
-      padding: 0.4rem 0.8rem;
+      padding: 0.4rem 0.75rem;
       font-size: 0.85rem;
       cursor: pointer;
       border-radius: 4px;
@@ -145,7 +149,7 @@
     /* Bike List - Card View */
     .bike-grid.card-view {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.25rem;
     }
     .card-view .bike-card {
@@ -160,11 +164,11 @@
     }
     .card-view .bike-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
     }
     .card-view .img-box {
       width: 100%;
-      height: 190px;
+      height: 200px;
       background: #f1f5f9;
       position: relative;
     }
@@ -180,16 +184,17 @@
       flex-grow: 1;
     }
     .card-view .bike-title {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.25rem;
       color: var(--text-main);
+      line-height: 1.4;
     }
     .card-view .bike-price {
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       font-weight: 700;
       color: var(--accent-red);
-      margin: 0.4rem 0;
+      margin: 0.35rem 0;
     }
     .card-view .bike-info {
       font-size: 0.85rem;
@@ -201,19 +206,18 @@
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
-      padding-top: 0.5rem;
+      padding-top: 0.6rem;
       border-top: 1px dashed var(--border-color);
     }
     .card-view .shop-tag {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
       margin-top: 0.5rem;
       display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.35rem;
       cursor: pointer;
       width: fit-content;
-      transition: color 0.15s;
     }
     .card-view .shop-tag:hover {
       color: var(--primary);
@@ -233,14 +237,14 @@
       padding: 0.75rem 1rem;
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1rem;
       position: relative;
     }
     .list-view .img-box {
       width: 120px;
-      height: 80px;
+      height: 85px;
       flex-shrink: 0;
-      border-radius: 6px;
+      border-radius: 8px;
       overflow: hidden;
       background: #f1f5f9;
       position: relative;
@@ -256,33 +260,29 @@
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
-    .list-view .main-info { min-width: 220px; }
+    .list-view .main-info { min-width: 180px; flex: 1; }
     .list-view .bike-title { font-size: 0.95rem; font-weight: 700; }
-    .list-view .bike-info { font-size: 0.8rem; color: var(--text-muted); }
+    .list-view .bike-info { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
     .list-view .shop-link {
       cursor: pointer;
       color: var(--text-muted);
-      transition: color 0.15s;
     }
-    .list-view .shop-link:hover {
-      color: var(--primary);
-      text-decoration: underline;
-    }
+    .list-view .shop-link:hover { color: var(--primary); text-decoration: underline; }
     .list-view .tags-box { display: flex; gap: 4px; flex-wrap: wrap; }
     .list-view .bike-price {
       font-size: 1.2rem;
       font-weight: 700;
       color: var(--accent-red);
       text-align: right;
-      min-width: 100px;
+      min-width: 90px;
     }
 
     /* Badges */
     .badge {
       position: absolute;
-      padding: 2px 7px;
+      padding: 3px 7px;
       font-size: 0.7rem;
       font-weight: 600;
       border-radius: 4px;
@@ -302,34 +302,83 @@
       font-weight: 500;
     }
 
-    /* Favorite Button on Card */
+    /* Favorite Button */
     .fav-btn {
       position: absolute;
       top: 8px;
       right: 8px;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       border: 1px solid var(--border-color);
       border-radius: 50%;
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       z-index: 5;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: transform 0.15s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .fav-btn:hover { transform: scale(1.1); }
-    .fav-btn i { color: #94a3b8; font-size: 0.95rem; }
+    .fav-btn i { color: #94a3b8; font-size: 1rem; }
     .fav-btn.active i { color: var(--accent-red); }
     .list-view .fav-btn {
       position: static;
       flex-shrink: 0;
+      width: 34px;
+      height: 34px;
     }
 
-    /* Floating Favorite Tray */
-    .floating-fav-badge {
+    /* Mobile Bottom Navigation Bar */
+    .mobile-bottom-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-top: 1px solid var(--border-color);
+      padding: 0.6rem 1rem calc(0.6rem + env(safe-area-inset-bottom));
+      z-index: 90;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
+    }
+    .bottom-bar-inner {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .bottom-bar-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-bottom-filter {
+      background: #f1f5f9;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+    .btn-bottom-fav {
+      background: #0f172a;
+      color: #fff;
+    }
+    .fav-count-pill {
+      background: var(--accent-red);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    /* Desktop Floating Fav Button */
+    .desktop-floating-fav {
       position: fixed;
       bottom: 24px;
       right: 24px;
@@ -344,22 +393,62 @@
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-      z-index: 100;
-      transition: transform 0.2s, background-color 0.2s;
-    }
-    .floating-fav-badge:hover {
-      transform: translateY(-2px);
-      background: #1e293b;
-    }
-    .fav-count-pill {
-      background: var(--accent-red);
-      color: #fff;
-      font-size: 0.75rem;
-      padding: 2px 8px;
-      border-radius: 12px;
+      z-index: 80;
     }
 
-    /* Modal Styles */
+    /* Filter BottomSheet Modal (Mobile) */
+    .filter-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(3px);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 150;
+    }
+    .filter-modal-overlay.active { display: flex; }
+    .filter-sheet {
+      background: #fff;
+      width: 100%;
+      max-width: 600px;
+      border-radius: 20px 20px 0 0;
+      padding: 1.25rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      animation: slideUp 0.25s ease-out;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+    }
+    .sheet-header h3 { font-size: 1.1rem; }
+    .sheet-close {
+      background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer;
+    }
+    .sheet-apply-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+
+    /* Favorite Modal */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -374,28 +463,20 @@
     .modal-overlay.active { display: flex; }
     .modal-box {
       background: #fff;
-      border-radius: 12px;
+      border-radius: 14px;
       max-width: 960px;
       width: 100%;
-      max-height: 90vh;
+      max-height: 88vh;
       display: flex;
       flex-direction: column;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
     .modal-header {
-      padding: 1.25rem 1.5rem;
+      padding: 1.2rem 1.5rem;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-    .modal-title { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      cursor: pointer;
     }
     .modal-actions {
       display: flex;
@@ -406,63 +487,48 @@
       border-bottom: 1px solid var(--border-color);
     }
     .modal-body {
-      padding: 1.5rem;
+      padding: 1.25rem;
       overflow-y: auto;
       flex: 1;
     }
-
-    /* Compare Table View */
-    .compare-table-wrapper {
-      overflow-x: auto;
-    }
+    .compare-table-wrapper { overflow-x: auto; }
     .compare-table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
-      min-width: 600px;
+      min-width: 580px;
     }
     .compare-table th, .compare-table td {
-      padding: 0.75rem 1rem;
+      padding: 0.75rem 0.85rem;
       border: 1px solid var(--border-color);
       vertical-align: middle;
     }
     .compare-table th {
       background: #f1f5f9;
-      width: 120px;
+      width: 110px;
       font-size: 0.85rem;
       color: var(--text-muted);
-      font-weight: 600;
       white-space: nowrap;
-    }
-    .compare-table .bike-header-cell {
-      min-width: 200px;
-      position: relative;
     }
     .compare-table img {
       width: 100%;
-      height: 120px;
+      height: 110px;
       object-fit: cover;
       border-radius: 6px;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
-
-    /* Favorite List Mode inside Modal */
-    .modal-fav-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
+    .modal-fav-list { display: flex; flex-direction: column; gap: 0.75rem; }
     .modal-fav-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 0.75rem 1rem;
-      gap: 1rem;
+      padding: 0.75rem;
+      gap: 0.75rem;
     }
     .modal-fav-item img {
-      width: 80px;
+      width: 75px;
       height: 55px;
       object-fit: cover;
       border-radius: 4px;
@@ -471,17 +537,16 @@
       background: #fee2e2;
       color: var(--accent-red);
       border: none;
-      padding: 0.4rem 0.8rem;
+      padding: 0.4rem 0.75rem;
       border-radius: 6px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 0.3rem;
+      white-space: nowrap;
     }
-    .del-btn:hover { background: #fca5a5; }
 
-    /* Infinite Scroll Loader */
     .scroll-loader {
       text-align: center;
       padding: 2rem 1rem;
@@ -491,6 +556,49 @@
       justify-content: center;
       align-items: center;
       gap: 0.5rem;
+    }
+
+    /* Responsive Mobile Rules (768px以下) */
+    @media (max-width: 768px) {
+      body { padding-bottom: 100px; }
+      .container { margin: 0.75rem auto; padding: 0 0.75rem; }
+      .desktop-filters { display: none; } /* スマホ時はデスクトップ用フィルターを隠す */
+      .desktop-floating-fav { display: none; } /* デスクトップ用右下ボタンを隠す */
+      .mobile-bottom-bar { display: block; } /* スマホ専用固定バーを表示 */
+
+      /* カード表示を「1列（フル幅）」に最適化 */
+      .bike-grid.card-view {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .card-view .img-box {
+        height: 220px;
+      }
+
+      /* リスト表示の余白調整 */
+      .list-view .bike-card {
+        padding: 0.65rem;
+        gap: 0.75rem;
+      }
+      .list-view .img-box {
+        width: 100px;
+        height: 75px;
+      }
+      .list-view .bike-price {
+        font-size: 1.1rem;
+        width: 100%;
+        text-align: left;
+        margin-top: 0.25rem;
+      }
+      .modal-box {
+        max-height: 94vh;
+        margin: 0;
+        border-radius: 16px 16px 0 0;
+      }
+      .modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+      }
     }
   </style>
 </head>
@@ -510,20 +618,22 @@
 
   <div class="container">
     <div class="filter-card">
-      <div class="filter-grid">
-        <div class="filter-group">
-          <label for="search">フリーワード検索</label>
-          <input type="text" id="search" class="input-control" placeholder="車種名・メーカー名">
-        </div>
+      <!-- フリーワード検索（PC/スマホ共通） -->
+      <div class="quick-search-box">
+        <input type="text" id="search" class="input-control" placeholder="🔍 車種名・メーカー名で即時検索...">
+      </div>
+
+      <!-- デスクトップ用フィルター一覧（スマホでは非表示） -->
+      <div class="desktop-filters">
         <div class="filter-group">
           <label for="shop-filter">店舗絞り込み</label>
-          <select id="shop-filter" class="input-control">
+          <select id="shop-filter" class="input-control" onchange="syncFilterValue('shop', this.value)">
             <option value="">全店舗</option>
           </select>
         </div>
         <div class="filter-group">
           <label for="price-filter">上限価格</label>
-          <select id="price-filter" class="input-control">
+          <select id="price-filter" class="input-control" onchange="syncFilterValue('price', this.value)">
             <option value="">指定なし</option>
             <option value="40">40万円以下</option>
             <option value="60">60万円以下</option>
@@ -534,7 +644,7 @@
         </div>
         <div class="filter-group">
           <label for="sort-filter">並び替え</label>
-          <select id="sort-filter" class="input-control">
+          <select id="sort-filter" class="input-control" onchange="syncFilterValue('sort', this.value)">
             <option value="new-first">新入荷優先</option>
             <option value="price-asc">価格が安い順</option>
             <option value="price-desc">価格が高い順</option>
@@ -558,37 +668,86 @@
     </div>
   </div>
 
-  <!-- Floating Favorite Button -->
-  <div class="floating-fav-badge" onclick="openFavModal()">
+  <!-- PC用フローティングお気に入りボタン -->
+  <div class="desktop-floating-fav" onclick="openFavModal()">
     <i class="fa-solid fa-heart" style="color: var(--accent-red);"></i>
     <span>お気に入り</span>
-    <span class="fav-count-pill" id="fav-floating-count">0</span>
+    <span class="fav-count-pill" id="fav-pc-count">0</span>
   </div>
 
-  <!-- Favorite & Compare Modal -->
+  <!-- スマホ用ボトムナビゲーションバー（下部固定） -->
+  <div class="mobile-bottom-bar">
+    <div class="bottom-bar-inner">
+      <button class="bottom-bar-btn btn-bottom-filter" onclick="openFilterSheet()">
+        <i class="fa-solid fa-sliders"></i>
+        <span>絞り込み・並び替え</span>
+      </button>
+      <button class="bottom-bar-btn btn-bottom-fav" onclick="openFavModal()">
+        <i class="fa-solid fa-heart" style="color: var(--accent-red);"></i>
+        <span>お気に入り</span>
+        <span class="fav-count-pill" id="fav-mobile-count">0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- スマホ用フィルターBottomSheetモーダル -->
+  <div class="filter-modal-overlay" id="filter-sheet-modal" onclick="closeFilterSheet(event)">
+    <div class="filter-sheet" onclick="event.stopPropagation()">
+      <div class="sheet-header">
+        <h3><i class="fa-solid fa-sliders"></i> 絞り込み・並び替え</h3>
+        <button class="sheet-close" onclick="closeFilterSheet()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="filter-group">
+        <label for="m-shop-filter">店舗</label>
+        <select id="m-shop-filter" class="input-control" onchange="syncFilterValue('shop', this.value)">
+          <option value="">全店舗</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="m-price-filter">上限価格</label>
+        <select id="m-price-filter" class="input-control" onchange="syncFilterValue('price', this.value)">
+          <option value="">指定なし</option>
+          <option value="40">40万円以下</option>
+          <option value="60">60万円以下</option>
+          <option value="80">80万円以下</option>
+          <option value="100">100万円以下</option>
+          <option value="150">150万円以下</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="m-sort-filter">並び替え</label>
+        <select id="m-sort-filter" class="input-control" onchange="syncFilterValue('sort', this.value)">
+          <option value="new-first">新入荷優先</option>
+          <option value="price-asc">価格が安い順</option>
+          <option value="price-desc">価格が高い順</option>
+        </select>
+      </div>
+      <button class="sheet-apply-btn" onclick="applyAndCloseSheet()">条件を適用して閉じる</button>
+    </div>
+  </div>
+
+  <!-- お気に入り＆比較モーダル -->
   <div class="modal-overlay" id="fav-modal" onclick="closeFavModal(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <div class="modal-title">
+        <div style="font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:0.5rem;">
           <i class="fa-solid fa-heart" style="color: var(--accent-red);"></i>
-          <span>お気に入り・車両比較</span>
+          <span>お気に入り・比較</span>
         </div>
-        <button class="modal-close" onclick="closeFavModal()"><i class="fa-solid fa-xmark"></i></button>
+        <button class="sheet-close" onclick="closeFavModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <div class="modal-actions">
         <div class="view-toggle">
           <button class="view-btn active" id="btn-fav-compare" onclick="setFavView('compare')"><i class="fa-solid fa-table-columns"></i> 比較表</button>
-          <button class="view-btn" id="btn-fav-list" onclick="setFavView('list')"><i class="fa-solid fa-list"></i> 一覧リスト</button>
+          <button class="view-btn" id="btn-fav-list" onclick="setFavView('list')"><i class="fa-solid fa-list"></i> 一覧</button>
         </div>
         <button class="del-btn" style="background:#f1f5f9;color:#64748b;" onclick="clearAllFavorites()">
           <i class="fa-solid fa-trash-can"></i> すべて削除
         </button>
       </div>
 
-      <div class="modal-body" id="fav-modal-body">
-        <!-- Content will be rendered here -->
-      </div>
+      <div class="modal-body" id="fav-modal-body"></div>
     </div>
   </div>
 
@@ -600,11 +759,10 @@
     let currentFiltered = [];
     let displayedCount = 0;
     let currentView = 'card';
-    let favView = 'compare'; // 'compare' or 'list'
+    let favView = 'compare';
     let favorites = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     let observer = null;
 
-    // 車両の固有キー生成 (店舗名 + 車種名 + 価格 + スペック)
     function getBikeKey(b) {
       return `${b.shop_name}_${b.title}_${b.price_num}_${b.info}`;
     }
@@ -618,9 +776,7 @@
         document.getElementById('update-label').innerHTML = `<i class="fa-regular fa-clock"></i> 更新日: ${data.updated_at || '不明'}`;
         allBikes = data.bikes || [];
 
-        // 月替わり・在庫消失時の自動クリーンアップ
         cleanupExpiredFavorites();
-
         populateShopList(allBikes);
         updateFavCountUI();
         setupObserver();
@@ -632,7 +788,6 @@
       }
     }
 
-    // 最新データに存在しないお気に入りを自動除外
     function cleanupExpiredFavorites() {
       const activeKeys = new Set(allBikes.map(getBikeKey));
       const initialCount = favorites.length;
@@ -640,7 +795,6 @@
 
       if (favorites.length !== initialCount) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
-        console.log(`掲載が終了した ${initialCount - favorites.length} 台の車両をお気に入りから除外しました。`);
       }
     }
 
@@ -674,7 +828,9 @@
     }
 
     function updateFavCountUI() {
-      document.getElementById('fav-floating-count').textContent = favorites.length;
+      const count = favorites.length;
+      document.getElementById('fav-pc-count').textContent = count;
+      document.getElementById('fav-mobile-count').textContent = count;
     }
 
     function syncFavButtons() {
@@ -697,9 +853,40 @@
     }
 
     function closeFavModal(event) {
-      if (!event || event.target.id === 'fav-modal' || event.target.closest('.modal-close')) {
+      if (!event || event.target.id === 'fav-modal' || event.target.closest('.sheet-close')) {
         document.getElementById('fav-modal').classList.remove('active');
       }
+    }
+
+    function openFilterSheet() {
+      document.getElementById('filter-sheet-modal').classList.add('active');
+    }
+
+    function closeFilterSheet(event) {
+      if (!event || event.target.id === 'filter-sheet-modal' || event.target.closest('.sheet-close')) {
+        document.getElementById('filter-sheet-modal').classList.remove('active');
+      }
+    }
+
+    function applyAndCloseSheet() {
+      closeFilterSheet();
+      applyFilter();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // PCとスマホのセレクトボックスの値を同期
+    function syncFilterValue(type, val) {
+      if (type === 'shop') {
+        document.getElementById('shop-filter').value = val;
+        document.getElementById('m-shop-filter').value = val;
+      } else if (type === 'price') {
+        document.getElementById('price-filter').value = val;
+        document.getElementById('m-price-filter').value = val;
+      } else if (type === 'sort') {
+        document.getElementById('sort-filter').value = val;
+        document.getElementById('m-sort-filter').value = val;
+      }
+      applyFilter();
     }
 
     function setFavView(view) {
@@ -715,7 +902,7 @@
         body.innerHTML = `
           <div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);">
             <i class="fa-regular fa-heart" style="font-size:2.5rem;margin-bottom:1rem;display:block;"></i>
-            お気に入り登録された車両はありません。<br>気になる車両の「ハート」マークを押して保存してください。
+            お気に入り登録された車両はありません。<br>気になる車両の「ハート」を押して保存してください。
           </div>
         `;
         return;
@@ -732,9 +919,9 @@
         favorites.forEach(b => {
           const safeKey = escapeHtml(getBikeKey(b));
           thead += `
-            <td class="bike-header-cell">
+            <td style="min-width:180px;">
               <img src="${b.image}" alt="${escapeHtml(b.title)}">
-              <div style="font-weight:700;font-size:0.95rem;">${escapeHtml(b.title)} ${escapeHtml(b.title_sub || '')}</div>
+              <div style="font-weight:700;font-size:0.9rem;">${escapeHtml(b.title)} ${escapeHtml(b.title_sub || '')}</div>
             </td>
           `;
           rowPrice += `<td style="font-weight:700;color:var(--accent-red);font-size:1.1rem;">${escapeHtml(b.price_display)}</td>`;
@@ -763,12 +950,12 @@
           html += `
             <div class="modal-fav-item">
               <img src="${b.image}" alt="${escapeHtml(b.title)}">
-              <div style="flex:1;">
-                <div style="font-weight:700;font-size:0.95rem;">${escapeHtml(b.title)} ${escapeHtml(b.title_sub || '')}</div>
-                <div style="font-size:0.8rem;color:var(--text-muted);">${escapeHtml(b.shop_name)} ｜ ${escapeHtml(b.info)}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(b.title)}</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">${escapeHtml(b.shop_name)} ｜ ${escapeHtml(b.info)}</div>
+                <div style="font-weight:700;color:var(--accent-red);font-size:1rem;margin-top:2px;">${escapeHtml(b.price_display)}</div>
               </div>
-              <div style="font-weight:700;color:var(--accent-red);font-size:1.1rem;">${escapeHtml(b.price_display)}</div>
-              <button class="del-btn" onclick='removeFavByKey("${safeKey}")'><i class="fa-solid fa-trash-can"></i> 削除</button>
+              <button class="del-btn" onclick='removeFavByKey("${safeKey}")'><i class="fa-solid fa-trash-can"></i></button>
             </div>
           `;
         });
@@ -790,20 +977,25 @@
 
     function populateShopList(bikes) {
       const shopSelect = document.getElementById('shop-filter');
-      const shops = Array.from(new Set(bikes.map(b => b.shop_name))).filter(Boolean);
-      shops.sort().forEach(shop => {
-        const opt = document.createElement('option');
-        opt.value = shop;
-        opt.textContent = shop;
-        shopSelect.appendChild(opt);
+      const mShopSelect = document.getElementById('m-shop-filter');
+      const shops = Array.from(new Set(bikes.map(b => b.shop_name))).filter(Boolean).sort();
+
+      shops.forEach(shop => {
+        const opt1 = document.createElement('option');
+        opt1.value = shop;
+        opt1.textContent = shop;
+        shopSelect.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = shop;
+        opt2.textContent = shop;
+        mShopSelect.appendChild(opt2);
       });
     }
 
     function filterByShop(shopName) {
       if (!shopName) return;
-      const shopSelect = document.getElementById('shop-filter');
-      shopSelect.value = shopName;
-      applyFilter();
+      syncFilterValue('shop', shopName);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -979,9 +1171,6 @@
     }
 
     document.getElementById('search').addEventListener('input', applyFilter);
-    document.getElementById('shop-filter').addEventListener('change', applyFilter);
-    document.getElementById('price-filter').addEventListener('change', applyFilter);
-    document.getElementById('sort-filter').addEventListener('change', applyFilter);
 
     loadData();
   </script>
