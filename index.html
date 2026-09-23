@@ -210,13 +210,6 @@
       display: flex;
       align-items: center;
       gap: 0.3rem;
-      cursor: pointer;
-      width: fit-content;
-      transition: color 0.15s;
-    }
-    .card-view .shop-tag:hover {
-      color: var(--primary);
-      text-decoration: underline;
     }
 
     /* Bike List - List View */
@@ -266,15 +259,6 @@
     .list-view .bike-info {
       font-size: 0.8rem;
       color: var(--text-muted);
-    }
-    .list-view .shop-link {
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: color 0.15s;
-    }
-    .list-view .shop-link:hover {
-      color: var(--primary);
-      text-decoration: underline;
     }
     .list-view .tags-box {
       display: flex;
@@ -403,15 +387,13 @@
       });
     }
 
-    // 店舗名クリック時に該当店舗へ絞り込む
     function filterByShop(shopName) {
-      if (!shopName) return;
       const shopSelect = document.getElementById('shop-filter');
-      shopSelect.value = shopName;
-      applyFilter();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      shopSelect.value = shopName; // ドロップダウンを選択状態にする
+      applyFilter();              // 絞り込みを再実行
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // 上部へスムーズにスクロール
     }
-
+    
     function applyFilter() {
       const searchVal = document.getElementById('search').value.toLowerCase().trim();
       const shopVal = document.getElementById('shop-filter').value;
@@ -425,6 +407,7 @@
         return titleMatch && shopMatch && priceMatch;
       });
 
+      // 並び替え処理
       if (sortVal === 'new-first') {
         filtered.sort((a, b) => (b.is_new ? 1 : 0) - (a.is_new ? 1 : 0));
       } else if (sortVal === 'price-asc') {
@@ -434,16 +417,6 @@
       }
 
       render(filtered);
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
     }
 
     function render(bikes) {
@@ -464,47 +437,35 @@
         const ownerBadge = bike.is_one_owner ? '<span class="badge badge-owner">ワンオーナー</span>' : '';
         const prevBadge = bike.is_previous_month ? '<span class="badge badge-prev">先月チラシ</span>' : '';
 
-        const tagsHtml = (bike.special_notes || []).map(t => `<span class="tag-item">${escapeHtml(t)}</span>`).join('');
-        const safeShopName = escapeHtml(bike.shop_name);
-        const safeTitle = escapeHtml(bike.title);
-        const safeTitleSub = escapeHtml(bike.title_sub || '');
-        const safePriceDisplay = escapeHtml(bike.price_display);
-        const safeInfo = escapeHtml(bike.info);
+        const tagsHtml = (bike.special_notes || []).map(t => `<span class="tag-item">${t}</span>`).join('');
 
         if (currentView === 'card') {
           card.innerHTML = `
             <div class="img-box">
               ${newBadge}${ownerBadge}${prevBadge}
-              <img src="${bike.image}" alt="${safeTitle}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%2394a3b8\\' stroke-width=\\'2\\'><rect width=\\'18\\' height=\\'18\\' x=\\'3\\' y=\\'3\\' rx=\\'2\\'/></svg>'">
+              <img src="${bike.image}" alt="${bike.title}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%2394a3b8\\' stroke-width=\\'2\\'><rect width=\\'18\\' height=\\'18\\' x=\\'3\\' y=\\'3\\' rx=\\'2\\'/></svg>'">
             </div>
             <div class="content-box">
-              <div class="bike-title">${safeTitle} ${safeTitleSub}</div>
-              <div class="bike-price">${safePriceDisplay}</div>
-              <div class="bike-info">${safeInfo}</div>
+              <div class="bike-title">${bike.title} ${bike.title_sub || ''}</div>
+              <div class="bike-price">${bike.price_display}</div>
+              <div class="bike-info">${bike.info}</div>
               <div class="tags-box">${tagsHtml}</div>
-              <div class="shop-tag" onclick="filterByShop('${safeShopName}')">
-                <i class="fa-solid fa-location-dot"></i> <span>${safeShopName}</span>
-              </div>
+              <div class="shop-tag"><i class="fa-solid fa-location-dot"></i> ${bike.shop_name}</div>
             </div>
           `;
         } else {
           card.innerHTML = `
             <div class="img-box">
               ${newBadge}${ownerBadge}${prevBadge}
-              <img src="${bike.image}" alt="${safeTitle}" loading="lazy">
+              <img src="${bike.image}" alt="${bike.title}" loading="lazy">
             </div>
             <div class="content-box">
               <div class="main-info">
-                <div class="bike-title">${safeTitle} ${safeTitleSub}</div>
-                <div class="bike-info">
-                  ${safeInfo} ｜ 
-                  <span class="shop-link" onclick="filterByShop('${safeShopName}')">
-                    <i class="fa-solid fa-location-dot"></i> ${safeShopName}
-                  </span>
-                </div>
+                <div class="bike-title">${bike.title} ${bike.title_sub || ''}</div>
+                <div class="bike-info">${bike.info} ｜ <i class="fa-solid fa-location-dot"></i> ${bike.shop_name}</div>
               </div>
               <div class="tags-box">${tagsHtml}</div>
-              <div class="bike-price">${safePriceDisplay}</div>
+              <div class="bike-price">${bike.price_display}</div>
             </div>
           `;
         }
