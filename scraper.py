@@ -133,58 +133,94 @@ def format_bike_data(raw_item, shop_info, year_month, is_previous):
         "is_previous_month": is_previous
     }
 
+def get_target_months():
+    """次月、当月、前月の(year, month)を優先順に返す"""
+    now = datetime.now()
+    y, m = now.year, now.month
+
+    # 1. 次月
+    if m == 12:
+        next_y, next_m = y + 1, 1
+    else:
+        next_y, next_m = y, m + 1
+
+    # 2. 当月
+    curr_y, curr_m = y, m
+
+    # 3. 前月
+    first_day = datetime(y, m, 1)
+    last_month_day = first_day - timedelta(days=1)
+    prev_y, prev_m = last_month_day.year, last_month_day.month
+
+    return [(next_y, next_m), (curr_y, curr_m), (prev_y, prev_m)]
+
 def main():
-    print("=== スクレイピング処理を開始します ===")
+    print("=== スクレイピング処理を開始します（次月先行取得モード） ===")
     shops = get_all_shops()
     if not shops:
         print("店舗情報が取得できなかったため終了します。")
         return
 
-    now = datetime.now()
-    curr_y, curr_m = now.year, now.month
-    
-    # 先月の年月計算
-    first_day = datetime(curr_y, curr_m, 1)
-    last_month_day = first_day - timedelta(days=1)
-    prev_y, prev_m = last_month_day.year, last_month_day.month
+    (next_ym, curr_ym, prev_ym) = get_target_months()
+    print(
+        f"探索優先順: 1.次月({next_ym[0]}/{next_ym[1]:02d}) ->"
+        f" 2.当月({curr_ym[0]}/{curr_ym[1]:02d}) ->"
+        f" 3.前月({prev_ym[0]}/{prev_ym[1]:02d})"
+    )
 
     all_bikes = []
 
     for index, shop in enumerate(shops, 1):
         shop_key = shop["key"]
-        print(f"[{index}/{len(shops)}] 処理中: {shop['name']} ({shop_key})...", end=" ")
+        print(
+            f"[{index}/{len(shops)}] 処理中: {shop['name']} ({shop_key})...",
+            end=" ",
+        )
 
-        # 1. 当月データを試行
-        raw_data, ym_str = fetch_shop_flyer_json(shop_key, curr_y, curr_m)
+        found_data = None
+        found_ym_str = None
         is_prev = False
 
-        # 2. 当月がなければ先月データを試行（フォールバック）
-        if raw_data is None:
-            raw_data, ym_str = fetch_shop_flyer_json(shop_key, prev_y, prev_m)
-            is_prev = True
+        # 次月 -> 当月 -> 前月の順にアタック
+        for y, m in [next_ym, curr_ym, prev_ym]:
+            data, ym_str = fetch_shop_flyer_json(shop_key, y, m)
+            if data and isinstance(data, list):
+                found_data = data
+                found_ym_str = ym_str
+                # 前月分だった場合のみ「先月チラシ」フラグを立てる
+                if (y, m) == prev_ym:
+                    is_prev = True
+                break
+            time.sleep(0.1)
 
-        if raw_data and isinstance(raw_data, list):
-            for item in raw_data:
-                bike = format_bike_data(item, shop, ym_str, is_prev)
+        if found_data:
+            for item in found_data:
+                bike = format_bike_data(
+                    item, shop, found_ym_str, is_previous=is_prev
+                )
                 all_bikes.append(bike)
-            status_txt = f"先月分 {len(raw_data)}台" if is_prev else f"今月分 {len(raw_data)}台"
-            print(f"-> 取得成功 ({status_txt})")
+            status_tag = "先月分" if is_prev else f"{found_ym_str}分"
+            print(f"-> 取得成功 ({status_tag} {len(found_data)}台)")
         else:
             print("-> チラシ未掲載")
 
-        # サーバー負荷対策: 0.3秒スリープ
-        time.sleep(0.3)
+        time.sleep(0.2)
 
+    # サイト読み込み高速化のため、インデント・余白を排除してファイルサイズを最小化
     output = {
-        "updated_at": now.strftime("%Y/%m/%d %H:%M"),
+        "updated_at": datetime.now().strftime("%Y/%m/%d %H:%M"),
         "total_count": len(all_bikes),
-        "bikes": all_bikes
+        "bikes": all_bikes,
     }
 
     with open("data.json", "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+        json.dump(output, f, ensure_ascii=False, separators=(",", ":"))
 
-    print(f"\n🎉 完了: 合計 {len(all_bikes)} 件の車両データを data.json に保存しました！")
+    print(
+        f"\n🎉 完了: 合計 {len(all_bikes)} 件の車両データを data.json"
+        " に軽量保存しました！"
+    )
+
 
 if __name__ == "__main__":
     main()
